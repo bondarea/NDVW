@@ -33,7 +33,7 @@ public class WomanKnightDialog : MonoBehaviour
         
         if(currentState != 0){
             characterText = womanKnightCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
-            characterText.text = "Welcome back";
+            characterText.text = "\n\nHello friend.";
         }
     }
 
@@ -44,6 +44,7 @@ public class WomanKnightDialog : MonoBehaviour
             womanKnightCanvas.SetActive(true);
             for (int i = 0; i < womanKnightCanvasChildren.Length; i++)
             {
+                Debug.Log(womanKnightCanvasChildren[i]);
                 if(i == currentState){
                     womanKnightCanvasChildren[i].gameObject.SetActive(true);
                 }
@@ -54,6 +55,10 @@ public class WomanKnightDialog : MonoBehaviour
         }
         else{
             womanKnightCanvas.SetActive(false);
+            currentState = 0; // Whenever you leave the conversation you start from the beginning (different beginning depending on weapon)
+            characterText = womanKnightCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
+            characterText.text = "\n\nHello friend.";
+        
         }
     }
 
@@ -67,6 +72,7 @@ public class WomanKnightDialog : MonoBehaviour
             A1();       
         }
         else if(currentState == 0 && currentButton.name == "Q2"){
+            characterText = womanKnightCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
             A2();
         }
         else if(currentState == 1 && currentButton.name == "Q5"){
@@ -92,21 +98,48 @@ public class WomanKnightDialog : MonoBehaviour
         Utils.setState(gameObject.name, currentState);
     }
     void A1(){
-        characterText.text = "A1";
+        string sentence = "Peace be upon you. Sadness grips my heart like a vise; the shadows of tragedy stretch far beyond this sorrowful event. Keep your eyes peeled in this room – the killer might have stashed the murder weapon here somewhere. Come back once you find something.";
+
+        StopAllCoroutines();
+        StartCoroutine(TypeSentence(sentence));
     }
 
     void A2(){
-        characterText.text = "A2";
+        string sentence = "\n\nI respect you are on duty but our brother has fallen, show some respect!";
+
+        StopAllCoroutines();
+        StartCoroutine(TypeSentence(sentence));
     }
 
     void A3(){
-        characterText.text = "A3";
+        string sentence = "I actually have, it should belong to the shopkeeper. A couple of days ago I saw the Viking and Shopkeeper gambling around the shop. The Viking seemed to have brought some wine from distant shores; the poor shopkeeper was utterly besotted, beyond sense or sensibility.";
+
+        StopAllCoroutines();
+        StartCoroutine(TypeSentence(sentence));
     }
-    
+
     void A4(){
-        characterText.text = "A4";
+        string sentence = "Oh thank you for retrieving my dagger! Suspicion has clouded my heart ever since the Warrior arrived. Old grudges die hard! Surely the memory of our bitter strife against that Warrior, alongside our brother-in-arms, has not escaped your mind?";
+
+        StopAllCoroutines();
+        StartCoroutine(TypeSentence(sentence));
     }
+
     void A5(){
-        characterText.text = "A5";
+        string sentence = "\nAs night's cloak enveloped our lands, I found myself lost in prayer at the chapel, seeking solace for a heart burdened by the endless toll of battle.";
+
+        StopAllCoroutines();
+        StartCoroutine(TypeSentence(sentence));
+    }
+
+
+        IEnumerator TypeSentence (string sentence)
+    {
+        characterText.text = "";
+        foreach (char letter in sentence.ToCharArray())
+        {
+            characterText.text += letter;
+            yield return null;
+        }
     }
 }

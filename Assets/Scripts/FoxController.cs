@@ -23,13 +23,9 @@ public class FoxController : MonoBehaviour
         
         this.transform.position = player.transform.position;
 
-        if(Utils.isCastleVisited() && SceneManager.GetActiveScene().name == "VillageScene"){ 
+        if(Utils.getScene() && SceneManager.GetActiveScene().name == "VillageScene"){ 
             this.transform.position = doorPosition;
         }
-
-        Debug.Log("Fox: " + this.transform.position);
-
-        
     }
 
     // Update is called once per frame

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RestartGame : MonoBehaviour
 {
@@ -8,6 +9,6 @@ public class RestartGame : MonoBehaviour
     {
         Time.timeScale = 1;
         Health_manager.health = 4;
-        //SceneManager.LoadScene(0);
+        SceneManager.LoadScene(0);
     }
 }

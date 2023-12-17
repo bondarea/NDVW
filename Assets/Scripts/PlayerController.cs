@@ -23,10 +23,9 @@ public class PlayerController : MonoBehaviour
         _controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         animator.Play("Idle");
-        Debug.Log("Castle visited: "+Utils.isCastleVisited() + "Active scene: "+SceneManager.GetActiveScene().name);
-        if(Utils.isCastleVisited() && SceneManager.GetActiveScene().name == "VillageScene"){ 
-            Debug.Log("NEAR THE DOOR");
+        if(Utils.getScene() && SceneManager.GetActiveScene().name == "VillageScene"){ 
             this.transform.position = doorPosition; 
+            Utils.changeScene();
         }
     }
 
@@ -41,22 +40,17 @@ public class PlayerController : MonoBehaviour
 
         if(isNearTheVillageDoor() && SceneManager.GetActiveScene().name == "VillageScene")
         {
-            //Debug.Log("Press E");
             if(Input.GetKeyDown(KeyCode.E))
             {
-                if(!Utils.isCastleVisited())
-                {
-                    Utils.setCastleVisited();
-                }
-                SceneManager.LoadScene(sceneName:"CastleScene");   
+                SceneManager.LoadScene(sceneName:"CastleScene"); 
+                Utils.changeScene();  
             }
             
         }else if(isNearTheCastleDoor() && SceneManager.GetActiveScene().name == "CastleScene")
         {
-            //Debug.Log("Press E");
             if(Input.GetKeyDown(KeyCode.E))
             {
-                SceneManager.LoadScene(sceneName:"VillageScene");   
+                SceneManager.LoadScene(sceneName:"VillageScene");
             }
         }  
 
