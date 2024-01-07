@@ -9,6 +9,7 @@ public class WomanKnightDialog : MonoBehaviour
 {
     // Start is called before the first frame update
     int currentState = 0;
+    int previousState = 0;
     GameObject player;
     GameObject womanKnightCanvas;
     TMP_Text characterText;
@@ -16,12 +17,36 @@ public class WomanKnightDialog : MonoBehaviour
     Canvas[] womanKnightCanvasChildren;
     Button[] buttons;
 
+
+    string dagger;
+    string pickaxe;
+    string poison;
+
+    bool dagger_in_hand;
+    bool pickaxe_in_hand;
+    bool poison_in_hand;
+
     void Start()
     {
         player = GameObject.Find("Player");
         womanKnightCanvas = GameObject.Find("WomanKnightCanvas");
         womanKnightCanvasChildren = womanKnightCanvas.transform.GetComponentsInChildren<Canvas>();
         womanKnightCanvas.SetActive(false);
+
+        dagger = "SM_Wep_Dagger_01";
+        pickaxe = "SM_Wep_Pickaxe_01";
+        poison = "SM_Item_Potion_06";
+        
+        poison_in_hand =  Utils.getweaponsInHandStatus(poison);
+        dagger_in_hand =  Utils.getweaponsInHandStatus(dagger);
+        pickaxe_in_hand =  Utils.getweaponsInHandStatus(pickaxe);
+
+        if (dagger_in_hand && !pickaxe_in_hand && !poison_in_hand){
+            currentState = 2;
+        }
+        if (pickaxe_in_hand && !dagger_in_hand && !poison_in_hand){
+            currentState = 3;
+        }
 
         currentState = Utils.getState(gameObject.name);
 
@@ -35,16 +60,37 @@ public class WomanKnightDialog : MonoBehaviour
             characterText = womanKnightCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
             characterText.text = "\n\nHello friend.";
         }
+        
     }
 
     // Update is called once per framem
     void Update()
     {
+        previousState = currentState;
+
+        poison_in_hand =  Utils.getweaponsInHandStatus(poison);
+        dagger_in_hand =  Utils.getweaponsInHandStatus(dagger);
+        pickaxe_in_hand =  Utils.getweaponsInHandStatus(pickaxe);
+
+        if (dagger_in_hand && !pickaxe_in_hand && !poison_in_hand){
+            currentState = 2;
+        }
+        if (pickaxe_in_hand && !dagger_in_hand && !poison_in_hand){
+            currentState = 3;
+        }
+        if(previousState != currentState){
+            previousState = currentState;
+            buttons = womanKnightCanvasChildren[currentState].GetComponentsInChildren<Button>();
+            for(int i = 0; i < buttons.Length; i++){
+                buttons[i].onClick.AddListener(ChangeCanvas);
+            }
+        }
+
         if(Vector3.Distance(player.transform.position, gameObject.transform.position) <= 2.0f){
             womanKnightCanvas.SetActive(true);
+
             for (int i = 0; i < womanKnightCanvasChildren.Length; i++)
             {
-                Debug.Log(womanKnightCanvasChildren[i]);
                 if(i == currentState){
                     womanKnightCanvasChildren[i].gameObject.SetActive(true);
                 }
@@ -55,15 +101,15 @@ public class WomanKnightDialog : MonoBehaviour
         }
         else{
             womanKnightCanvas.SetActive(false);
-            currentState = 0; // Whenever you leave the conversation you start from the beginning (different beginning depending on weapon)
             characterText = womanKnightCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
             characterText.text = "\n\nHello friend.";
-        
+            currentState = 0; // Whenever you leave the conversation you start from the beginning (different beginning depending on weapon)
         }
     }
 
     private void ChangeCanvas(){
         GameObject currentButton = EventSystem.current.currentSelectedGameObject;
+
         // Change current state based on the current button and the previous state
 
         if(currentState == 0 && currentButton.name == "Q1"){
@@ -76,7 +122,24 @@ public class WomanKnightDialog : MonoBehaviour
             A2();
         }
         else if(currentState == 1 && currentButton.name == "Q5"){
+            characterText = womanKnightCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
             A5();
+        }
+        else if(currentState == 0 && currentButton.name == "Q2"){
+            characterText = womanKnightCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
+            A2();
+        }
+        else if(currentState == 1 && currentButton.name == "Q5"){
+            characterText = womanKnightCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
+            A5();
+        }
+        else if(currentState == 2 && currentButton.name == "Q4"){
+            characterText = womanKnightCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
+            A4();
+        }
+        else if(currentState == 3 && currentButton.name == "Q3"){
+            characterText = womanKnightCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
+            A3();
         }
         
         buttons = womanKnightCanvasChildren[currentState].GetComponentsInChildren<Button>();

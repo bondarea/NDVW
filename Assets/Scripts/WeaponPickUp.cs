@@ -9,6 +9,9 @@ public class WeaponPickUp : MonoBehaviour
     private GameObject[] weapons;
     private bool hasWeapon;
     // Start is called before the first frame update
+    static void Awake(){
+        Utils.Init();
+    }
     void Start()
     {
         hand  = gameObject.GetComponent<Animator>().GetBoneTransform(HumanBodyBones.RightThumbProximal);
@@ -16,14 +19,14 @@ public class WeaponPickUp : MonoBehaviour
         hasWeapon = false;
         foreach (GameObject weapon in weapons)
         {
-            Debug.Log(weapon.name);
-            Debug.Log(Utils.getWeaponCastlePos(weapon.name)); //TODO: position problem
             if(SceneManager.GetActiveScene().name == "VillageScene"){ 
                 if(Utils.getweaponsInCastle(weapon.name) && !Utils.getweaponsInHandStatus(weapon.name)){
                     weapon.SetActive(false);
                 }else{
                     weapon.SetActive(true);
-                    weapon.transform.position = Utils.getWeaponVillagePos(weapon.name); 
+                    if(!Utils.getweaponsInHandStatus(weapon.name)){
+                        weapon.transform.position = Utils.getWeaponVillagePos(weapon.name); 
+                    }
                 }
             }
             else{
@@ -31,7 +34,9 @@ public class WeaponPickUp : MonoBehaviour
                     weapon.SetActive(false);
                 }else{
                     weapon.SetActive(true);
-                    weapon.transform.position = Utils.getWeaponCastlePos(weapon.name); 
+                    if(!Utils.getweaponsInHandStatus(weapon.name)){
+                        weapon.transform.position = Utils.getWeaponCastlePos(weapon.name); 
+                    }
                 }
             }
         }
@@ -62,28 +67,6 @@ public class WeaponPickUp : MonoBehaviour
             }
         }
 
-        // Press D to pick up or drop weapons
-        foreach (GameObject weapon in weapons)
-        {
-            if (Vector3.Distance(weapon.transform.position, gameObject.transform.position) < 2.0f && 
-                Input.GetKeyDown(KeyCode.D) && weapon.transform.parent == null && !hasWeapon) {  
-                weapon.transform.position = hand.transform.position;
-                weapon.transform.eulerAngles = new Vector3(0,0,-22);
-                weapon.transform.parent = hand;
-                weapon.GetComponent<Rigidbody>().useGravity = false;
-                weapon.GetComponent<Rigidbody>().constraints =  RigidbodyConstraints.FreezeAll;
-                hasWeapon = true;
-                Utils.setWeaponInHand(weapon.name, true);
-            }
-            else if(Input.GetKeyDown(KeyCode.D) && weapon.transform.parent != null && hasWeapon){
-                weapon.transform.parent = null;
-                weapon.GetComponent<Rigidbody>().useGravity = true;
-                weapon.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-                hasWeapon = false;
-                Utils.setWeaponInHand(weapon.name, false);
-            }
-        }
-
         foreach (GameObject weapon in weapons)
         {
             if(SceneManager.GetActiveScene().name == "VillageScene"){ 
@@ -91,7 +74,7 @@ public class WeaponPickUp : MonoBehaviour
                     weapon.SetActive(false);
                 }else{
                     weapon.SetActive(true);
-                    weapon.transform.position = Utils.getWeaponVillagePos(weapon.name); 
+                    Utils.setWeaponVillagePos(weapon.name, weapon.transform.position); 
                 }
             }
             else{
@@ -99,8 +82,31 @@ public class WeaponPickUp : MonoBehaviour
                     weapon.SetActive(false);
                 }else{
                     weapon.SetActive(true);
-                    weapon.transform.position = Utils.getWeaponCastlePos(weapon.name); 
+                    Utils.setWeaponCastlePos(weapon.name, weapon.transform.position); 
                 }
+            }
+        }
+
+        // Press C to pick up or drop weapons
+        foreach (GameObject weapon in weapons)
+        {
+            if (Vector3.Distance(weapon.transform.position, gameObject.transform.position) < 2.0f && 
+                Input.GetKeyDown(KeyCode.C) && weapon.transform.parent == null && !hasWeapon) {  
+                weapon.transform.position = hand.transform.position;
+                weapon.transform.eulerAngles = new Vector3(0,0,-22);
+                weapon.transform.parent = hand;
+                weapon.GetComponent<Rigidbody>().useGravity = false;
+                weapon.GetComponent<Rigidbody>().constraints =  RigidbodyConstraints.FreezeAll;
+                hasWeapon = true;
+                Utils.setWeaponInHand(weapon.name, true);
+                Debug.Log(weapon.name);
+            }
+            else if(Input.GetKeyDown(KeyCode.C) && weapon.transform.parent != null && hasWeapon){
+                weapon.transform.parent = null;
+                weapon.GetComponent<Rigidbody>().useGravity = true;
+                weapon.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+                hasWeapon = false;
+                Utils.setWeaponInHand(weapon.name, false);
             }
         }
     }

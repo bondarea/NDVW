@@ -16,6 +16,9 @@ public class ShopkeeperDialog : MonoBehaviour
     Canvas[] shopkeeperCanvasChildren;
     Button[] buttons;
 
+    string pickaxe;
+    bool pickaxe_in_hand;
+
     void Start()
     {
         player = GameObject.Find("Player");
@@ -24,6 +27,10 @@ public class ShopkeeperDialog : MonoBehaviour
         shopkeeperCanvas.SetActive(false);
 
         currentState = Utils.getState(gameObject.name);
+
+        pickaxe = "SM_Wep_Pickaxe_01";        
+        pickaxe_in_hand =  Utils.getweaponsInHandStatus(pickaxe);
+
 
         buttons = shopkeeperCanvasChildren[currentState].GetComponentsInChildren<Button>();
 
@@ -40,6 +47,9 @@ public class ShopkeeperDialog : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        pickaxe_in_hand =  Utils.getweaponsInHandStatus(pickaxe);
+
+        
         if(Vector3.Distance(player.transform.position, gameObject.transform.position) <= 2.0f){
             shopkeeperCanvas.SetActive(true);
             for (int i = 0; i < shopkeeperCanvasChildren.Length; i++)
@@ -77,11 +87,17 @@ public class ShopkeeperDialog : MonoBehaviour
             currentState = 1;
             characterText = shopkeeperCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
             A2();
-        }else if(currentState == 1 && currentButton.name == "Q3"){
+        }else if(currentState == 1 && currentButton.name == "Q3" && pickaxe_in_hand){
             currentState = 2;
+            Debug.Log("Current state: " + currentState);
             characterText = shopkeeperCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
-            A3();
-        }else if(currentState == 1 && currentButton.name == "Q4"){
+            A3_2();
+        }else if(currentState == 1 && currentButton.name == "Q3" && !pickaxe_in_hand){
+            Debug.Log("No pickaxe, Current state: " + currentState);
+            characterText = shopkeeperCanvasChildren[currentState].GetComponentsInChildren<TMP_Text>()[^1];
+            A3_1();
+        }
+        else if(currentState == 1 && currentButton.name == "Q4"){
             A4();
         }else if(currentState == 1 && currentButton.name == "Q5"){
             A5();
@@ -123,9 +139,16 @@ public class ShopkeeperDialog : MonoBehaviour
         StartCoroutine(TypeSentence(sentence));
     }
 
-    void A3(){
+    void A3_1(){
         string sentence = "Suspicious? Well, everyone's been on edge."; // without pickaxe
         // string sentence = "Where did you find that pickaxe?! I indeed wondered for the last couple of days where it went - someone must have stolen it! No ordinary pickaxe, mind you; strong enough to break through castle stone, and even kill a man, that one was.";
+
+        StopAllCoroutines();
+        StartCoroutine(TypeSentence(sentence));
+    }
+
+    void A3_2(){
+        string sentence = "Where did you find that pickaxe?! I indeed wondered for the last couple of days where it went - someone must have stolen it! No ordinary pickaxe, mind you; strong enough to break through castle stone, and even kill a man, that one was.";
 
         StopAllCoroutines();
         StartCoroutine(TypeSentence(sentence));
