@@ -1,4 +1,0 @@
-repository "NDVW@NDVW@cloud"
-  path "/"
-    br "/main"
-    co "/main"
